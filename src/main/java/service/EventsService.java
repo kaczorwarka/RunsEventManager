@@ -1,7 +1,11 @@
 package service;
 
-import Model.Run;
+import model.Run;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,21 +14,21 @@ import java.util.Objects;
 public class EventsService {
 
     private List<Run> myRunsList = new ArrayList<>();
-    private List<Run> apiRunsList = new ArrayList<>();
+    private final List<Run> apiRunsList;
 
+    private final Statement statement;
 
-    public List<Run> getRunEvents(){
-        //connecting to DB
-        List<Run> runEvents = new ArrayList<>();
-
-        runEvents.add(new Run("Warsaw marathon", 42.195, LocalDate.of(2023,10,2), "web1"));
-        runEvents.add(new Run("Warsaw half marathon", 21.1, LocalDate.of(2023,3,12), "web2"));
-        runEvents.add(new Run("Bieg dzika", 125, LocalDate.of(2023,7,3), "web3"));
-
-        apiRunsList = runEvents;
-
-        return runEvents;
+    public EventsService() {
+        try {
+            Connection connection = DriverManager.getConnection(DBInfo.DATABASE_URL, DBInfo.USERNAME, DBInfo.PASSWORD);
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        ApiConnection apiConnection = new ApiConnection();
+        apiRunsList = apiConnection.getApiRunEvents();
     }
+
 
     public List<Run> getMyRuns(String name, Integer distance, LocalDate date, String location){
         List<Run> searchRun = new ArrayList<>();
@@ -53,16 +57,16 @@ public class EventsService {
         for (Run run : apiRunsList) {
             counter = 0;
             if (Objects.equals(name, "") || run.getName().equalsIgnoreCase(name)) {
-                System.out.println("git N");
+                //System.out.println("git N");
                 counter++;
             }
             if (distance == 0 || (int) run.getDistance() == distance) {
                 System.out.println((int) run.getDistance());
-                System.out.println("git D");
+                //System.out.println("git D");
                 counter++;
             }
             if (date == null || run.getDate().isAfter(date)) {
-                System.out.println("git Da");
+                //System.out.println("git Da");
                 counter++;
             }
 
@@ -73,7 +77,26 @@ public class EventsService {
         return searchRun;
     }
 
+    public void addToMyRuns(String id){
+        Run newRun = null;
+        for (Run run : apiRunsList){
+            if (run.getId() == Integer.parseInt(id)){
+                newRun = run;
+                break;
+            }
+        }
+        if(newRun != null){
+            apiRunsList.remove(newRun);
+
+        }
+
+    }
+
     public void addRun(Run run){
         myRunsList.add(run);
+    }
+
+    public List<Run> getApiRunsList() {
+        return apiRunsList;
     }
 }

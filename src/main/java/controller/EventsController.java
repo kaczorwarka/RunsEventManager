@@ -1,7 +1,7 @@
 package controller;
 
-import Model.Run;
-import Model.User;
+import model.Run;
+import model.User;
 import com.kuba.runmanager.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,7 +21,6 @@ import service.EventsService;
 import java.io.IOException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -123,7 +122,7 @@ public class EventsController implements Initializable{
                     searchDate.getValue(),searchLocation.getText());
         }
         for(Run run : searchRun){
-            if(layoutX + height > events.getHeight()){
+            if(layoutX + height >= runList.getHeight()){
                 break;
             }
             BorderPane borderPane =  putRun(run, space, height, width);
@@ -135,16 +134,15 @@ public class EventsController implements Initializable{
             AnchorPane.setLeftAnchor(borderPane,layoutY);
             layoutX += height + space;
         }
-
     }
 
     public void addRun(String id){
         System.out.println(id);
-        for(Run run : runEventsAPI){
+        for(Run run : eventsService.getApiRunsList()){
             if(run.getId() == Double.parseDouble(id)){
                 eventsService.addRun(run);
                 try {
-                    runEventsAPI.remove(run);
+                    eventsService.getApiRunsList().remove(run);
                 }catch (ConcurrentModificationException e){
                     System.out.println("Bieg usuniety");
                 }
@@ -157,7 +155,7 @@ public class EventsController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Initialized !");
-        runEventsAPI = eventsService.getRunEvents();
+        // runEventsAPI = eventsService.getRunEvents();
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000);
         searchDistance.setValueFactory(valueFactory);
     }

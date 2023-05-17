@@ -1,32 +1,42 @@
 package service;
 
-import Model.User;
+import model.User;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+
 
 public class LoginService {
 
-    private List<User> users = new ArrayList<>(List.of(
-            new User("Kuba", "Kaczmarski", "kuba.kaczmarski@gmail.com",
-                    LocalDate.of(2001,10,2), "123")
-    ));
+    private final Statement statement;
+
 
     public LoginService() {
-
+        try {
+            Connection connection = DriverManager.getConnection(DBInfo.DATABASE_URL, DBInfo.USERNAME, DBInfo.PASSWORD);
+            statement = connection.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public User getUser(String email, String password){
-        //connecting DB
-        //-----------------------------------
-        for(User user : users){
-            if(user.getEmail().equalsIgnoreCase(email) && user.getPassword().equals(password)){
-                return user;
+        ResultSet resultSet;
+        try {
+            String userTable = "user";
+            resultSet = statement.executeQuery("select * from " + userTable +
+                    " where email = '" + email +
+                    "' and password = '" + password + "';");
+            if(!resultSet.next()){
+                return null;
+            }else{
+                return new User(
+                        resultSet.getString("name"), resultSet.getString("lastName"),
+                        resultSet.getString("email"),resultSet.getDate("dateOfBirth").toLocalDate(),
+                        resultSet.getString("password"), resultSet.getInt("idUSer"));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return null;
-        //-----------------------------------
     }
 
 }

@@ -1,6 +1,6 @@
 package controller;
 
-import Model.User;
+import model.User;
 import com.kuba.runmanager.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

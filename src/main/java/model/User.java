@@ -1,24 +1,34 @@
-package Model;
+package model;
 
 import java.time.LocalDate;
 
 public class User {
-    static int idGlobal = 0;
     private int id;
-    private String Name;
-    private String LastName;
+    private String name;
+    private String lastName;
     private String email;
     private LocalDate dateOfBirth;
     private String password;
 
     public User(String name, String lastName, String email, LocalDate dateOfBirth, String password) {
-        Name = name;
-        LastName = lastName;
+        this.name = name;
+        this.lastName = lastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.password = password;
-        this.id = idGlobal;
-        idGlobal ++;
+    }
+
+    public User(String name, String lastName, String email, LocalDate dateOfBirth, String password, int id) {
+        this.name = name;
+        this.lastName = lastName;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        this.password = password;
+        this.id = id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {
@@ -26,11 +36,11 @@ public class User {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public String getEmail() {
