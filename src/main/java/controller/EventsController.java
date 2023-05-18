@@ -1,7 +1,6 @@
 package controller;
 
 import model.Run;
-import model.User;
 import com.kuba.runmanager.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,15 +52,14 @@ public class EventsController implements Initializable{
     private Stage stage;
     private final EventsService eventsService;
     private List<Run> runEventsAPI;
-    private User user;
     private boolean myRunsTurn = false;
 
     public EventsController() {
         this.eventsService = new EventsService();
     }
-    public void getUser(User user) {
-        this.user = user;
-        userNameLabel.setText("User: " + user.getName());
+    public void getUser(int id) {
+        eventsService.getUserDB(id);
+        userNameLabel.setText("User: " + eventsService.getUser().getName());
     }
 
     public void userAccount(ActionEvent event) throws IOException {
@@ -69,7 +67,7 @@ public class EventsController implements Initializable{
         root = loader.load();
 
         UserController userController = loader.getController();
-        userController.getUser(user);
+        userController.getUser(eventsService.getUser().getId());
 
         stage = (Stage) events.getScene().getWindow();
         scene = new Scene(root);
@@ -107,7 +105,6 @@ public class EventsController implements Initializable{
     }
 
     public void runSearch(ActionEvent event){
-        runList.getChildren().clear();
         double space = 15.0;
         double height = 50;
         double width = 300;
@@ -117,6 +114,7 @@ public class EventsController implements Initializable{
         if(myRunsTurn){
             searchRun = eventsService.getMyRuns(searchName.getText(), searchDistance.getValue(),
                     searchDate.getValue(),searchLocation.getText());
+            runList.getChildren().clear();
         }else{
             searchRun = eventsService.getApiRuns(searchName.getText(), searchDistance.getValue(),
                     searchDate.getValue(),searchLocation.getText());
@@ -137,19 +135,22 @@ public class EventsController implements Initializable{
     }
 
     public void addRun(String id){
-        System.out.println(id);
-        for(Run run : eventsService.getApiRunsList()){
-            if(run.getId() == Double.parseDouble(id)){
-                eventsService.addRun(run);
-                try {
-                    eventsService.getApiRunsList().remove(run);
-                }catch (ConcurrentModificationException e){
-                    System.out.println("Bieg usuniety");
-                }
-                runList.getChildren().clear();
-                searchButton.fire();
-            }
-        }
+        runList.getChildren().clear();
+        eventsService.addToMyRunDB(id);
+//        System.out.println(id);
+//        for(Run run : eventsService.getApiRunsList()){
+//            if(run.getId() == Double.parseDouble(id)){
+//                eventsService.addRun(run);
+//                try {
+//                    eventsService.getApiRunsList().remove(run);
+//                }catch (ConcurrentModificationException e){
+//                    System.out.println("Bieg usuniety");
+//                }
+//                runList.getChildren().clear();
+//                searchButton.fire();
+//            }
+//        }
+        searchButton.fire();
     }
 
     @Override

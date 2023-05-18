@@ -64,5 +64,6 @@
       </Label>
       <Button layoutX="473.0" layoutY="337.0" mnemonicParsing="false" onAction="#goBack" text="Go Back -&gt;" />
       <Button fx:id="changeButton" layoutX="274.0" layoutY="337.0" mnemonicParsing="false" onAction="#updateUser" text="Change" />
+      <Button layoutX="53.0" layoutY="337.0" mnemonicParsing="false" onAction="#delete" text="Delete User" />
    </children>
 </AnchorPane>

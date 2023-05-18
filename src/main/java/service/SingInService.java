@@ -52,9 +52,9 @@ public class SingInService {
                     user.getName() + "',\n'" +
                     user.getLastName() + "',\n'" +
                     user.getEmail() + "',\n'" +
-                    user.getDateOfBirth() + "',\n" +
+                    user.getDateOfBirth() + "',\n'" +
                     user.getPassword() +
-                    ");");
+                    "');");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

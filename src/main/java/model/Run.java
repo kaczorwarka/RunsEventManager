@@ -3,20 +3,30 @@ package model;
 import java.time.LocalDate;
 
 public class Run {
-    static int idGlobal = 0;
+    private static int idGlobal = 0;
     private int id;
     private String name;
     private double distance;
     private LocalDate date;
     private String website;
+    private String Location;
 
-    public Run(String name, double distance, LocalDate date, String website) {
+    public Run(String name, double distance, LocalDate date, String website, String Location) {
         this.name = name;
         this.distance = distance;
         this.date = date;
         this.website = website;
+        this.Location = Location;
         this.id = idGlobal;
         idGlobal += 1;
+    }
+    public Run(int id,String name, double distance, LocalDate date, String website, String Location) {
+        this.name = name;
+        this.distance = distance;
+        this.date = date;
+        this.website = website;
+        this.Location = Location;
+        this.id = id;
     }
 
     public int getId() {
@@ -37,5 +47,13 @@ public class Run {
 
     public String getWebsite() {
         return website;
+    }
+
+    public String getLocation() {
+        return Location;
+    }
+
+    public static void setIdGlobal(int idGlobal) {
+        Run.idGlobal = idGlobal;
     }
 }

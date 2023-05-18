@@ -1,6 +1,5 @@
 package controller;
 
-import model.User;
 import com.kuba.runmanager.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,16 +37,16 @@ public class LoginController {
 
         String userLogin = userLoginField.getText();
         String userPassword = userPasswordField.getText();
-        User user = loginService.getUser(userLogin, userPassword);
+        Integer userId = loginService.getUserDB(userLogin, userPassword);
 
-        if (user == null){
+        if (userId == null){
             errorField.setText("Your login or password are incorrect");
         }else{
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("Events.fxml"));
             root = loader.load();
 
             EventsController eventsController = loader.getController();
-            eventsController.getUser(user);
+            eventsController.getUser(userId);
 
             stage = (Stage)login.getScene().getWindow();
             scene = new Scene(root);

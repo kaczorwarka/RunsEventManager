@@ -1,7 +1,5 @@
 package service;
 
-import model.User;
-
 import java.sql.*;
 
 
@@ -19,7 +17,7 @@ public class LoginService {
         }
     }
 
-    public User getUser(String email, String password){
+    public Integer getUserDB(String email, String password){
         ResultSet resultSet;
         try {
             String userTable = "user";
@@ -29,10 +27,7 @@ public class LoginService {
             if(!resultSet.next()){
                 return null;
             }else{
-                return new User(
-                        resultSet.getString("name"), resultSet.getString("lastName"),
-                        resultSet.getString("email"),resultSet.getDate("dateOfBirth").toLocalDate(),
-                        resultSet.getString("password"), resultSet.getInt("idUSer"));
+                return resultSet.getInt("idUser");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

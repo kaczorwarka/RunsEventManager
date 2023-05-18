@@ -1,16 +1,12 @@
 package controller;
 
-import model.User;
 import com.kuba.runmanager.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import service.UserService;
@@ -36,28 +32,27 @@ public class UserController {
     private Button changeButton;
 
     private final Button acceptButton = new Button();
-    private TextField updateName = new TextField();
-    private TextField updateLastName = new TextField();
-    private TextField updateEmail = new TextField();
-    private DatePicker updateDateOfBirth = new DatePicker();
-    private TextField updatePassword = new TextField();
+    private final TextField updateName = new TextField();
+    private final TextField updateLastName = new TextField();
+    private final TextField updateEmail = new TextField();
+    private final DatePicker updateDateOfBirth = new DatePicker();
+    private final TextField updatePassword = new TextField();
     private Parent root;
     private Scene scene;
     private Stage stage;
-    private UserService userService;
-    private User user;
+    private final UserService userService;
 
     public UserController() {
         userService = new UserService();
     }
 
-    public void getUser(User user) {
-        this.user = user;
-        nameText.setText(user.getName());
-        lastNameText.setText(user.getLastName());
-        emailText.setText(user.getEmail());
-        dateOfBirthText.setText(user.getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        passwordText.setText(user.getPassword());
+    public void getUser(int id) {
+        userService.getUserDB(id);
+        nameText.setText(userService.getUser().getName());
+        lastNameText.setText(userService.getUser().getLastName());
+        emailText.setText(userService.getUser().getEmail());
+        dateOfBirthText.setText(userService.getUser().getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+        passwordText.setText(userService.getUser().getPassword());
         acceptButton.setText("Accept");
         acceptButton.setOnAction(this::acceptUpdate);
     }
@@ -97,6 +92,9 @@ public class UserController {
     }
 
     public void acceptUpdate(ActionEvent event){
+        userService.updateUserDB(updateName.getText(), updateLastName.getText(), updateEmail.getText(),
+                updateDateOfBirth.getValue(), updatePassword.getText());
+
         userScene.getChildren().remove(acceptButton);
         userScene.getChildren().remove(updateName);
         userScene.getChildren().remove(updateLastName);
@@ -104,14 +102,30 @@ public class UserController {
         userScene.getChildren().remove(updateDateOfBirth);
         userScene.getChildren().remove(updatePassword);
 
-        nameText.setText(user.getName());
-        lastNameText.setText(user.getLastName());
-        emailText.setText(user.getEmail());
-        dateOfBirthText.setText(user.getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
-        passwordText.setText(user.getPassword());
+        nameText.setText(userService.getUser().getName());
+        lastNameText.setText(userService.getUser().getLastName());
+        emailText.setText(userService.getUser().getEmail());
+        dateOfBirthText.setText(userService.getUser().getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+        passwordText.setText(userService.getUser().getPassword());
         changeButton.setText("Change");
         changeButton.setDisable(false);
 
+    }
+
+    public void delete(ActionEvent event) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete");
+        alert.setHeaderText("You're about to delete your account !");
+        alert.setContentText("Are you sure?");
+        if (alert.showAndWait().get() == ButtonType.OK){
+            userService.deleteUserDB();
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("Login.fxml"));
+            root = loader.load();
+            stage = (Stage)userScene.getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        }
     }
 
     public void goBack(ActionEvent event) throws IOException {
@@ -119,7 +133,7 @@ public class UserController {
         root = loader.load();
 
         EventsController eventsController = loader.getController();
-        eventsController.getUser(user);
+        eventsController.getUser(userService.getUser().getId());
 
         stage = (Stage)userScene.getScene().getWindow();
         scene = new Scene(root);

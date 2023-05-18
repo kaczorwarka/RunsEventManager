@@ -40,12 +40,11 @@ public class ApiConnection {
             runEvents.add(new Run(run.get("Name").getAsString(),
                     run.get("Distance").getAsDouble(),
                     localDateTime.toLocalDate(),
-                    run.get("Website").getAsString()));
+                    run.get("Website").getAsString(),
+                    run.get("Location").getAsString()));
         }
-
         return runEvents;
     }
-
 
     private List<JsonObject> getConnection(){
         List<JsonObject> jsonList = null;
