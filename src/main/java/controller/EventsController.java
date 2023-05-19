@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.geometry.Pos;
 import model.Run;
 import com.kuba.runmanager.Main;
 import javafx.event.ActionEvent;
@@ -20,7 +21,7 @@ import service.EventsService;
 import java.io.IOException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
-import java.util.ConcurrentModificationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -37,7 +38,6 @@ public class EventsController implements Initializable{
     public MenuItem myRuns;
     @FXML
     private Label userNameLabel;
-
     @FXML
     private TextField searchName;
     @FXML
@@ -46,13 +46,15 @@ public class EventsController implements Initializable{
     private DatePicker searchDate;
     @FXML
     private TextField searchLocation;
+    @FXML
+    private Label myRunText;
 
     private Parent root;
     private Scene scene;
     private Stage stage;
     private final EventsService eventsService;
-    private List<Run> runEventsAPI;
     private boolean myRunsTurn = false;
+    private final List<Counter> counters = new ArrayList<>();
 
     public EventsController() {
         this.eventsService = new EventsService();
@@ -94,6 +96,7 @@ public class EventsController implements Initializable{
         myRuns.setDisable(true);
         apiRuns.setDisable(false);
         myRunsTurn = true;
+        myRunText.setText("My Runs");
         runList.getChildren().clear();
     }
 
@@ -101,15 +104,21 @@ public class EventsController implements Initializable{
         myRuns.setDisable(false);
         apiRuns.setDisable(true);
         myRunsTurn = false;
+        myRunText.setText("");
         runList.getChildren().clear();
     }
 
     public void runSearch(ActionEvent event){
+        for(Counter counter : counters){
+            counter.interrupt();
+        }
+        counters.clear();
+        runList.getChildren().clear();
         double space = 15.0;
-        double height = 50;
-        double width = 300;
         double layoutX = space;
         double layoutY = 25;
+        double height = 70;
+        double width = runList.getWidth() - 2 * layoutY;
         List<Run> searchRun;
         if(myRunsTurn){
             searchRun = eventsService.getMyRuns(searchName.getText(), searchDistance.getValue(),
@@ -127,6 +136,14 @@ public class EventsController implements Initializable{
             runList.getChildren().add(borderPane);
             if(!myRunsTurn){
                 borderPane.setOnMouseClicked(e -> addRun(borderPane.getId()));
+            }else{
+                borderPane.setOnMouseClicked(e -> {
+                    try {
+                        runInfo(borderPane.getId());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
             }
             AnchorPane.setTopAnchor(borderPane,layoutX);
             AnchorPane.setLeftAnchor(borderPane,layoutY);
@@ -137,26 +154,25 @@ public class EventsController implements Initializable{
     public void addRun(String id){
         runList.getChildren().clear();
         eventsService.addToMyRunDB(id);
-//        System.out.println(id);
-//        for(Run run : eventsService.getApiRunsList()){
-//            if(run.getId() == Double.parseDouble(id)){
-//                eventsService.addRun(run);
-//                try {
-//                    eventsService.getApiRunsList().remove(run);
-//                }catch (ConcurrentModificationException e){
-//                    System.out.println("Bieg usuniety");
-//                }
-//                runList.getChildren().clear();
-//                searchButton.fire();
-//            }
-//        }
         searchButton.fire();
+    }
+
+    public void runInfo(String id) throws IOException {
+        FXMLLoader loader = new FXMLLoader(Main.class.getResource("Run.fxml"));
+        root = loader.load();
+
+        RunController runController = loader.getController();
+        runController.getRun(id, eventsService.getUser().getId());
+
+        stage = (Stage) events.getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Initialized !");
-        // runEventsAPI = eventsService.getRunEvents();
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000);
         searchDistance.setValueFactory(valueFactory);
     }
@@ -171,18 +187,33 @@ public class EventsController implements Initializable{
         Label name = new Label();
         Label distance = new Label();
         Label date = new Label();
+        Label location = new Label();
+        Label timer = new Label();
         name.setText(run.getName());
         name.setFont(Font.font("myFont", FontWeight.BOLD, 12));
         distance.setText(run.getDistance()+" km");
         date.setText(run.getDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
+        location.setText(run.getLocation());
+        timer.setText("timer");
+
+        date.setPrefWidth(5*space);
+        date.setAlignment(Pos.CENTER_RIGHT);
+        distance.setPrefWidth(5*space);
 
         borderPane.setLeft(distance);
         borderPane.setCenter(name);
         borderPane.setRight(date);
+        borderPane.setTop(location);
+        borderPane.setBottom(timer);
 
-        BorderPane.setMargin(distance, new Insets(space, 0, 0, space));
-        BorderPane.setMargin(date, new Insets(space, space, 0, 0));
-
+        BorderPane.setMargin(distance, new Insets(0, 0, 0, space));
+        BorderPane.setAlignment(distance, Pos.CENTER_LEFT);
+        BorderPane.setMargin(date, new Insets(0, space, 0, 0));
+        BorderPane.setAlignment(date, Pos.CENTER_RIGHT);
+        BorderPane.setAlignment(location, Pos.TOP_CENTER);
+        BorderPane.setAlignment(timer, Pos.CENTER);
+        counters.add(new Counter(eventsService, borderPane, timer, searchButton, run));
+        counters.get(counters.size() - 1).start();
         return borderPane;
     }
 

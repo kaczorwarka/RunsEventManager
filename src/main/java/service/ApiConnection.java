@@ -29,14 +29,10 @@ public class ApiConnection {
     public List<Run> getApiRunEvents(){
         //connecting to DB
         List<JsonObject> jsonList = getConnection();
-        System.out.println(jsonList.toString());
-
         List<Run> runEvents = new ArrayList<>();
-
         for(JsonObject run : jsonList){
             String dateS = run.get("Date").getAsString();
             LocalDateTime localDateTime = LocalDateTime.parse(dateS.substring(0, dateS.length() - 1));
-            System.out.println(localDateTime.toLocalDate());
             runEvents.add(new Run(run.get("Name").getAsString(),
                     run.get("Distance").getAsDouble(),
                     localDateTime.toLocalDate(),
@@ -54,9 +50,7 @@ public class ApiConnection {
         try {
             URL url = new URL(link);
             urlConnection = (HttpURLConnection) url.openConnection();
-
             urlConnection.setRequestMethod("GET");
-
             int status = urlConnection.getResponseCode();
             if(status < 300){
                 reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));

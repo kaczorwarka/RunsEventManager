@@ -6,12 +6,12 @@ import model.User;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class EventsService {
 
-    private List<Run> myRunsList = new ArrayList<>();
     private final List<Run> apiRunsList;
     private final String runTable = "myrun";
     private final  String userTable = "user";
@@ -25,10 +25,9 @@ public class EventsService {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        ApiConnection apiConnection = new ApiConnection();
-        apiRunsList = apiConnection.getApiRunEvents();
 
         int id = -1;
+
         ResultSet resultSet;
         try {
             resultSet = statement.executeQuery("select idRun from " + runTable + " order by idRun desc;");
@@ -39,6 +38,12 @@ public class EventsService {
             throw new RuntimeException(e);
         }
         Run.setIdGlobal(id + 1);
+        System.out.println(Run.getIdGlobal());
+
+        ApiConnection apiConnection = new ApiConnection();
+        apiRunsList = apiConnection.getApiRunEvents();
+
+        apiRunsList.sort(Comparator.comparing(Run::getDate));
     }
 
     public void getUserDB(int id){
@@ -51,6 +56,21 @@ public class EventsService {
                     resultSet.getString("name"), resultSet.getString("lastName"),
                     resultSet.getString("email"), resultSet.getDate("dateOfBirth").toLocalDate(),
                     resultSet.getString("password"), resultSet.getInt("idUser"));
+
+            int i = 0;
+            Run run;
+            while (i < apiRunsList.size()){
+                run = apiRunsList.get(i);
+                resultSet = statement.executeQuery("select * from " + runTable +
+                        "\nwhere idUser = " + id +
+                        "\nand name = \"" + run.getName() +
+                        "\"\nand distance = " + run.getDistance() +
+                        "\nand date = '" + run.getDate() +
+                        "'\nand location = \"" + run.getLocation() +
+                        "\";");
+                if(resultSet.next()) apiRunsList.remove(run);
+                else i ++;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -63,15 +83,17 @@ public class EventsService {
         try {
             if(name.equals("") && distance == 0 && date == null && location.equals("")){
                 resultSet = statement.executeQuery("select * from myrun " +
-                        "where idUser = " + user.getId() + ";");
+                        "where idUser = " + user.getId() +
+                        " order by date asc;");
             }else{
                 if(date == null) date = LocalDate.parse("2001-02-16");
                 resultSet = statement.executeQuery("select * from myrun " +
-                        "where (name = '" + name +
-                        "' or distance = " + distance +
+                        "where (name = \"" + name +
+                        "\" or distance = " + distance +
                         " or date = '" + date +
-                        "' or location = '" + location +
-                        "') and idUser = " + user.getId() + ";");
+                        "' or location = \"" + location +
+                        "\") and idUser = " + user.getId() + "\n" +
+                        "order by date asc;");
             }
             while(resultSet.next()){
                 searchRun.add(new Run(resultSet.getInt("idRun"), resultSet.getString("name"),
@@ -93,7 +115,6 @@ public class EventsService {
                 counter++;
             }
             if (distance == 0 || (int) run.getDistance() == distance) {
-                System.out.println((int) run.getDistance());
                 counter++;
             }
             if (date == null || run.getDate().isAfter(date)) {
@@ -111,6 +132,7 @@ public class EventsService {
         for (Run run : apiRunsList){
             if (run.getId() == Integer.parseInt(id)){
                 newRun = run;
+                System.out.println(newRun.getId());
                 break;
             }
         }
@@ -128,12 +150,12 @@ public class EventsService {
                                 "`idUser`)\n" +
                                 "VALUES\n" +
                                 "(" +
-                                newRun.getId() + ",\n'" +
-                                newRun.getName() + "',\n" +
+                                newRun.getId() + ",\n\"" +
+                                newRun.getName() + "\",\n" +
                                 newRun.getDistance() + ",\n'" +
                                 newRun.getDate() + "',\n'" +
-                                newRun.getWebsite() + "',\n'" +
-                                newRun.getLocation() + "',\n" +
+                                newRun.getWebsite() + "',\n\"" +
+                                newRun.getLocation() + "\",\n" +
                                 user.getId() +
                                 ");");
             } catch (SQLException e) {
@@ -142,14 +164,10 @@ public class EventsService {
         }
     }
 
-    public void addRun(Run run){
-        myRunsList.add(run);
-    }
 
-    public List<Run> getApiRunsList() {
-        return apiRunsList;
+    public void deleteApiRun(Run run){
+        apiRunsList.remove(run);
     }
-
     public User getUser() {
         return user;
     }

@@ -4,12 +4,12 @@ import java.time.LocalDate;
 
 public class Run {
     private static int idGlobal = 0;
-    private int id;
-    private String name;
-    private double distance;
-    private LocalDate date;
-    private String website;
-    private String Location;
+    private final int id;
+    private final String name;
+    private final double distance;
+    private final LocalDate date;
+    private final String website;
+    private final String Location;
 
     public Run(String name, double distance, LocalDate date, String website, String Location) {
         this.name = name;
@@ -51,6 +51,10 @@ public class Run {
 
     public String getLocation() {
         return Location;
+    }
+
+    public static int getIdGlobal() {
+        return idGlobal;
     }
 
     public static void setIdGlobal(int idGlobal) {

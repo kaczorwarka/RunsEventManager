@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="events" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EventsController">
+<AnchorPane fx:id="events" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EventsController">
    <children>
-      <MenuBar layoutY="1.0" prefHeight="30.0" prefWidth="600.0">
+      <MenuBar layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="800.0">
         <menus>
           <Menu mnemonicParsing="false" text="Account">
                <items>
@@ -28,47 +28,58 @@
                </items></Menu>
         </menus>
       </MenuBar>
-      <HBox layoutY="31.0" prefHeight="370.0" prefWidth="600.0">
+      <HBox layoutY="31.0" prefHeight="570.0" prefWidth="800.0">
          <children>
-            <AnchorPane prefHeight="370.0" prefWidth="250.0" style="-fx-background-color: #e8e8e8;">
+            <AnchorPane prefHeight="570.0" prefWidth="350.0" style="-fx-background-color: #e8e8e8;">
                <children>
                   <Label fx:id="userNameLabel" layoutX="14.0" layoutY="14.0" text="User: ">
                      <font>
-                        <Font size="20.0" />
+                        <Font size="30.0" />
                      </font>
                   </Label>
-                  <Button fx:id="searchButton" layoutX="82.0" layoutY="306.0" mnemonicParsing="false" onAction="#runSearch" text="Search">
+                  <Button fx:id="searchButton" layoutX="133.0" layoutY="500.0" mnemonicParsing="false" onAction="#runSearch" text="Search">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Button>
-                  <Label layoutX="17.0" layoutY="91.0" text="Name:">
+                  <Label layoutX="20.0" layoutY="126.0" text="Name:">
                      <font>
-                        <Font size="15.0" />
+                        <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label layoutX="14.0" layoutY="140.0" text="Distance:">
+                  <Label layoutX="22.0" layoutY="224.0" text="Distance:">
                      <font>
-                        <Font size="15.0" />
+                        <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label layoutX="14.0" layoutY="194.0" text="Date:">
+                  <Label layoutX="23.0" layoutY="316.0" text="Date:">
                      <font>
-                        <Font size="15.0" />
+                        <Font size="20.0" />
                      </font>
                   </Label>
-                  <Label layoutX="14.0" layoutY="247.0" text="Location:">
+                  <Label layoutX="20.0" layoutY="403.0" text="Location:">
                      <font>
-                        <Font size="15.0" />
+                        <Font size="20.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="searchName" layoutX="64.0" layoutY="89.0" />
-                  <Spinner fx:id="searchDistance" editable="true" layoutX="82.0" layoutY="138.0" prefHeight="26.0" prefWidth="86.0" />
-                  <DatePicker fx:id="searchDate" layoutX="52.0" layoutY="192.0" />
-                  <TextField fx:id="searchLocation" layoutX="82.0" layoutY="245.0" />
+                  <TextField fx:id="searchName" layoutX="110.0" layoutY="126.0">
+                     <font>
+                        <Font size="15.0" />
+                     </font></TextField>
+                  <Spinner fx:id="searchDistance" editable="true" layoutX="112.0" layoutY="226.0" prefHeight="26.0" prefWidth="86.0" />
+                  <DatePicker fx:id="searchDate" layoutX="113.0" layoutY="318.0" />
+                  <TextField fx:id="searchLocation" layoutX="110.0" layoutY="403.0">
+                     <font>
+                        <Font size="15.0" />
+                     </font></TextField>
+                  <Label fx:id="myRunText" layoutX="131.0" layoutY="59.0" prefHeight="45.0" prefWidth="122.0">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="runList" prefHeight="370.0" prefWidth="350.0" />
+            <AnchorPane fx:id="runList" prefHeight="570.0" prefWidth="450.0" />
          </children>
       </HBox>
    </children>
