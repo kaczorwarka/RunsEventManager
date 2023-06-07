@@ -20,6 +20,7 @@ import service.EventsService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,27 +133,28 @@ public class EventsController implements Initializable{
             if(layoutX + height >= runList.getHeight()){
                 break;
             }
-            BorderPane borderPane =  putRun(run, space, height, width);
-            runList.getChildren().add(borderPane);
-            if(!myRunsTurn){
-                borderPane.setOnMouseClicked(e -> addRun(borderPane.getId()));
-            }else{
-                borderPane.setOnMouseClicked(e -> {
-                    try {
-                        runInfo(borderPane.getId());
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
+            if(run.getDate().isAfter(LocalDate.now())){
+                BorderPane borderPane =  putRun(run, space, height, width);
+                runList.getChildren().add(borderPane);
+                if(!myRunsTurn){
+                    borderPane.setOnMouseClicked(e -> addRun(borderPane.getId()));
+                }else{
+                    borderPane.setOnMouseClicked(e -> {
+                        try {
+                            runInfo(borderPane.getId());
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+                }
+                AnchorPane.setTopAnchor(borderPane,layoutX);
+                AnchorPane.setLeftAnchor(borderPane,layoutY);
+                layoutX += height + space;
             }
-            AnchorPane.setTopAnchor(borderPane,layoutX);
-            AnchorPane.setLeftAnchor(borderPane,layoutY);
-            layoutX += height + space;
         }
     }
 
     public void addRun(String id){
-        runList.getChildren().clear();
         eventsService.addToMyRunDB(id);
         searchButton.fire();
     }

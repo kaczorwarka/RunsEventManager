@@ -6,8 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import model.Run;
 import service.EventsService;
-import java.time.LocalDate;
-import static java.time.temporal.ChronoUnit.DAYS;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Counter extends Thread{
 
@@ -17,9 +17,9 @@ public class Counter extends Thread{
     Button searchButton;
     Run run;
     long days;
-    int hours;
-    int minutes;
-    int seconds;
+    long hours;
+    long minutes;
+    long seconds;
 
     public Counter(EventsService eventsService, BorderPane borderPane, Label timer, Button searchButton, Run run){
         this.eventsService = eventsService;
@@ -31,37 +31,31 @@ public class Counter extends Thread{
 
     @Override
     public void run(){
-        days = DAYS.between(LocalDate.now(), run.getDate());
-        hours = 0;
-        minutes = 0;
-        seconds = 0;
+        LocalDateTime dateOfRun = run.getDate().atStartOfDay();
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(now, dateOfRun);
 
-        while (days > -1 && !Thread.interrupted()){
+        while (duration.isPositive()){
+            days = duration.toDays();
+            hours = duration.toHours() % 24;
+            minutes = duration.toMinutes() % 60;
+            seconds = duration.toSeconds() % 60;
             Platform.runLater(()->{
                 timer.setText(days + ":" + hours + ":" + minutes + ":" + seconds);
             });
-            if(seconds == 0){
-                seconds = 60;
-                if(minutes == 0){
-                    minutes = 60;
-                    if(hours == 0){
-                        hours = 24;
-                        days --;
-                    }
-                    hours --;
-                }
-                minutes--;
-            }
-            seconds --;
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+
+                return;
+            } catch (RuntimeException e){
                 break;
             }
+            now = LocalDateTime.now();
+            duration = Duration.between(now, dateOfRun);
         }
-        if(days == -1){
-            eventsService.deleteApiRun(run);
-            searchButton.fire();
-        }
+        eventsService.deleteApiRun(run);
+        searchButton.fire();
+
     }
 }
