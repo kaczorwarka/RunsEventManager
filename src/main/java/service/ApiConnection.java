@@ -22,7 +22,6 @@ public class ApiConnection {
     private HttpURLConnection urlConnection;
 
     public List<Run> getApiRunEvents(){
-        //connecting to DB
         List<JsonObject> jsonList = getConnection();
         List<Run> runEvents = new ArrayList<>();
         for(JsonObject run : jsonList){

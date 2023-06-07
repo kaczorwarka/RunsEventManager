@@ -66,8 +66,11 @@ public class UserService {
     }
 
     public void deleteUserDB(){
+        String runTable = "myrun";
         try {
             statement.executeUpdate("delete from " + userTable +
+                    " where idUser = " + user.getId() + ";");
+            statement.executeUpdate("delete from " + runTable +
                     " where idUser = " + user.getId() + ";");
         } catch (SQLException e) {
             throw new RuntimeException(e);
