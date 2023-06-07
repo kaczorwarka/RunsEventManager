@@ -1,5 +1,8 @@
 package controller;
 
+import controller.EventBus.APIRunEvent;
+import controller.EventBus.EventListener;
+import controller.EventBus.MyRunEvent;
 import javafx.geometry.Pos;
 import model.Run;
 import com.kuba.runmanager.Main;
@@ -25,6 +28,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import com.google.common.eventbus.EventBus;
 
 public class EventsController implements Initializable{
     @FXML
@@ -54,8 +59,13 @@ public class EventsController implements Initializable{
     private Scene scene;
     private Stage stage;
     private final EventsService eventsService;
-    private boolean myRunsTurn = false;
+    private boolean myRunsTurn;
     private final List<Counter> counters = new ArrayList<>();
+
+    private EventBus eventBus = new EventBus();
+    private APIRunEvent apiRunEvent;
+    private MyRunEvent myRunEvent;
+    private EventListener eventListener;
 
     public EventsController() {
         this.eventsService = new EventsService();
@@ -93,22 +103,6 @@ public class EventsController implements Initializable{
         }
     }
 
-    public void myRunsClicked(ActionEvent event){
-        myRuns.setDisable(true);
-        apiRuns.setDisable(false);
-        myRunsTurn = true;
-        myRunText.setText("My Runs");
-        runList.getChildren().clear();
-    }
-
-    public void apiRunsClicked(ActionEvent event){
-        myRuns.setDisable(false);
-        apiRuns.setDisable(true);
-        myRunsTurn = false;
-        myRunText.setText("");
-        runList.getChildren().clear();
-    }
-
     public void runSearch(ActionEvent event){
         for(Counter counter : counters){
             counter.interrupt();
@@ -121,7 +115,7 @@ public class EventsController implements Initializable{
         double height = 70;
         double width = runList.getWidth() - 2 * layoutY;
         List<Run> searchRun;
-        if(myRunsTurn){
+        if(eventListener.isMyRunTurns()){
             searchRun = eventsService.getMyRuns(searchName.getText(), searchDistance.getValue(),
                     searchDate.getValue(),searchLocation.getText());
             runList.getChildren().clear();
@@ -136,7 +130,7 @@ public class EventsController implements Initializable{
             if(run.getDate().isAfter(LocalDate.now())){
                 BorderPane borderPane =  putRun(run, space, height, width);
                 runList.getChildren().add(borderPane);
-                if(!myRunsTurn){
+                if(!eventListener.isMyRunTurns()){
                     borderPane.setOnMouseClicked(e -> addRun(borderPane.getId()));
                 }else{
                     borderPane.setOnMouseClicked(e -> {
@@ -175,8 +169,21 @@ public class EventsController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Initialized !");
+        myRunsTurn = false;
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000);
         searchDistance.setValueFactory(valueFactory);
+
+        apiRunEvent = new APIRunEvent(myRuns, apiRuns, myRunText, runList);
+        myRunEvent = new MyRunEvent(myRuns, apiRuns, myRunText, runList);
+        eventListener = new EventListener();
+        eventBus.register(eventListener);
+        myRuns.setOnAction(event -> {
+            eventBus.post(myRunEvent);
+        });
+        apiRuns.setOnAction(event -> {
+            eventBus.post(apiRunEvent);
+        });
+
     }
 
     public BorderPane putRun(Run run, double space, double height, double width){

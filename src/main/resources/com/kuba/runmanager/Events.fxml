@@ -23,8 +23,8 @@
                </items></Menu>
           <Menu mnemonicParsing="false" text="Data">
                <items>
-                  <MenuItem fx:id="myRuns" mnemonicParsing="false" onAction="#myRunsClicked" text="My Runs" />
-                  <MenuItem fx:id="apiRuns" disable="true" mnemonicParsing="false" onAction="#apiRunsClicked" text="All Runs" />
+                  <MenuItem fx:id="myRuns" mnemonicParsing="false" text="My Runs" />
+                  <MenuItem fx:id="apiRuns" disable="true" mnemonicParsing="false" text="All Runs" />
                </items></Menu>
         </menus>
       </MenuBar>

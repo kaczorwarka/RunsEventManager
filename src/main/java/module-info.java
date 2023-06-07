@@ -3,10 +3,11 @@ module com.kuba.runmanager {
     requires javafx.fxml;
     requires java.sql;
     requires com.google.gson;
-
+    requires com.google.common;
 
     opens com.kuba.runmanager to javafx.fxml;
     exports com.kuba.runmanager;
     exports controller;
+    exports controller.EventBus;
     opens controller to javafx.fxml;
 }
