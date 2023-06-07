@@ -19,6 +19,8 @@ public class EventsService {
     private User user;
 
     public EventsService() {
+
+        System.out.println(DBInfo.DATABASE_URL);
         try {
             Connection connection = DriverManager.getConnection(DBInfo.DATABASE_URL, DBInfo.USERNAME, DBInfo.PASSWORD);
             statement = connection.createStatement();

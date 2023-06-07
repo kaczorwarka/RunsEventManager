@@ -63,7 +63,9 @@ public class SignInController {
                 stage.setScene(scene);
                 stage.show();
             }else if(answer == 1){
-                wrongEmail.setText("This email already exist !");
+                wrongEmail.setText("This email already exist in data base !");
+            }else if(answer == 2){
+                wrongEmail.setText("This email is wrong !");
             }
         }
     }

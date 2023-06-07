@@ -5,11 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import service.DBInfo;
 
 
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
+
         Parent root = FXMLLoader.load(Main.class.getResource("Login.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -17,6 +19,7 @@ public class Main extends Application {
     }
 
     public static void main(String[] args){
+        DBInfo.DBInitialize();
         launch();
     }
 }

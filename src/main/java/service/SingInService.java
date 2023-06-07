@@ -3,10 +3,16 @@ package service;
 import model.User;
 
 import java.sql.*;
+import java.util.Properties;
+
+import org.apache.commons.validator.routines.EmailValidator;
 
 public class SingInService {
 
+    private Properties properties = new Properties();
+
     private final Statement statement;
+    EmailValidator validator = EmailValidator.getInstance();
 
     public SingInService() {
 
@@ -22,6 +28,9 @@ public class SingInService {
         int id;
         String email;
         ResultSet resultSet;
+        if (!validator.isValid(user.getEmail())){
+            return 2;
+        }
         try {
             String userTable = "user";
             resultSet = statement.executeQuery("select idUser, email from " + userTable + " order by idUser desc;");

@@ -4,6 +4,7 @@ module com.kuba.runmanager {
     requires java.sql;
     requires com.google.gson;
     requires com.google.common;
+    requires commons.validator;
 
     opens com.kuba.runmanager to javafx.fxml;
     exports com.kuba.runmanager;
