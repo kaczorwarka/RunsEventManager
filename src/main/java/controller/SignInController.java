@@ -3,7 +3,6 @@ package controller;
 import javafx.scene.control.Label;
 import model.User;
 import com.kuba.runmanager.Main;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,17 +34,13 @@ public class SignInController {
     @FXML
     private Label noValue;
 
-    private Parent root;
-    private Scene scene;
-    private Stage stage;
-
     private final SingInService singInService;
 
     public SignInController() {
         this.singInService = new SingInService();
     }
 
-    public void createAccount(ActionEvent event) throws IOException {
+    public void createAccount() throws IOException {
 
         if(name.getText() == null || lastName.getText() == null || email.getText() == null ||
         dateOfBirth.getValue() == null || password.getText() == null){
@@ -56,10 +51,10 @@ public class SignInController {
             int answer = singInService.add(user);
             if(answer == 0){
                 FXMLLoader loader = new FXMLLoader(Main.class.getResource("Login.fxml"));
-                root = loader.load();
+                Parent root = loader.load();
 
-                stage = (Stage)signIn.getScene().getWindow();
-                scene = new Scene(root);
+                Stage stage = (Stage) signIn.getScene().getWindow();
+                Scene scene = new Scene(root);
                 stage.setScene(scene);
                 stage.show();
             }else if(answer == 1){

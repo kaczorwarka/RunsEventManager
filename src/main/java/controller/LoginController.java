@@ -34,7 +34,7 @@ public class LoginController {
         this.loginService = new LoginService();
     }
 
-    public void userLogin(ActionEvent event) throws IOException {
+    public void userLogin() throws IOException {
 
         String userLogin = userLoginField.getText();
         String userPassword = userPasswordField.getText();
@@ -56,7 +56,7 @@ public class LoginController {
         }
     }
 
-    public void userSingIn(ActionEvent event) throws IOException {
+    public void userSingIn() throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("SignIn.fxml"));
         root = loader.load();
 

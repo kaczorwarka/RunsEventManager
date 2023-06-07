@@ -14,22 +14,17 @@ public class EventsService {
 
     private final List<Run> apiRunsList;
     private final String runTable = "myrun";
-    private final  String userTable = "user";
     private final Statement statement;
     private User user;
 
     public EventsService() {
-
-        System.out.println(DBInfo.DATABASE_URL);
         try {
             Connection connection = DriverManager.getConnection(DBInfo.DATABASE_URL, DBInfo.USERNAME, DBInfo.PASSWORD);
             statement = connection.createStatement();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         int id = -1;
-
         ResultSet resultSet;
         try {
             resultSet = statement.executeQuery("select idRun from " + runTable + " order by idRun desc;");
@@ -40,17 +35,15 @@ public class EventsService {
             throw new RuntimeException(e);
         }
         Run.setIdGlobal(id + 1);
-        System.out.println(Run.getIdGlobal());
-
         ApiConnection apiConnection = new ApiConnection();
         apiRunsList = apiConnection.getApiRunEvents();
-
         apiRunsList.sort(Comparator.comparing(Run::getDate));
     }
 
     public void getUserDB(int id){
         ResultSet resultSet;
         try {
+            String userTable = "user";
             resultSet = statement.executeQuery("select * from " + userTable +
                     " where idUser = '" + id + "';");
             resultSet.next();
@@ -122,7 +115,10 @@ public class EventsService {
             if (date == null || run.getDate().isAfter(date)) {
                 counter++;
             }
-            if (counter == 3) {
+            if (Objects.equals(location, "") || run.getLocation().equalsIgnoreCase(location)){
+                counter ++;
+            }
+            if (counter == 4) {
                 searchRun.add(run);
             }
         }

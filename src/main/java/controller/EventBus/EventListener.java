@@ -10,21 +10,21 @@ public class EventListener {
     @Subscribe
     public void APIRunClicked(APIRunEvent apiRunEvent){
         System.out.println("Subscriber take api event");
-        apiRunEvent.getMyRuns().setDisable(false);
-        apiRunEvent.getApiRuns().setDisable(true);
+        apiRunEvent.myRuns().setDisable(false);
+        apiRunEvent.apiRuns().setDisable(true);
         myRunTurns = false;
-        apiRunEvent.getMyRunText().setText("");
-        apiRunEvent.getRunList().getChildren().clear();
+        apiRunEvent.myRunText().setText("");
+        apiRunEvent.runList().getChildren().clear();
     }
 
     @Subscribe
     public void MyRunClicked(MyRunEvent myRunEvent){
         System.out.println("Subscriber take no api event");
-        myRunEvent.getMyRuns().setDisable(true);
-        myRunEvent.getApiRuns().setDisable(false);
+        myRunEvent.myRuns().setDisable(true);
+        myRunEvent.apiRuns().setDisable(false);
         myRunTurns = true;
-        myRunEvent.getMyRunText().setText("My runs");
-        myRunEvent.getRunList().getChildren().clear();
+        myRunEvent.myRunText().setText("My runs");
+        myRunEvent.runList().getChildren().clear();
     }
 
     public boolean isMyRunTurns() {

@@ -57,7 +57,7 @@ public class UserController {
         acceptButton.setOnAction(this::acceptUpdate);
     }
 
-    public void updateUser(ActionEvent event){
+    public void updateUser(){
         nameText.setText("");
         lastNameText.setText("");
         emailText.setText("");
@@ -112,7 +112,7 @@ public class UserController {
 
     }
 
-    public void delete(ActionEvent event) throws IOException {
+    public void delete() throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete");
         alert.setHeaderText("You're about to delete your account !");
@@ -128,7 +128,7 @@ public class UserController {
         }
     }
 
-    public void goBack(ActionEvent event) throws IOException {
+    public void goBack() throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("Events.fxml"));
         root = loader.load();
 

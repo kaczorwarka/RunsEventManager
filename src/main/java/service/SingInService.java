@@ -1,16 +1,10 @@
 package service;
 
 import model.User;
-
 import java.sql.*;
-import java.util.Properties;
-
 import org.apache.commons.validator.routines.EmailValidator;
 
 public class SingInService {
-
-    private Properties properties = new Properties();
-
     private final Statement statement;
     EmailValidator validator = EmailValidator.getInstance();
 

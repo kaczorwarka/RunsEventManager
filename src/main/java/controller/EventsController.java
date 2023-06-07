@@ -6,7 +6,6 @@ import controller.EventBus.MyRunEvent;
 import javafx.geometry.Pos;
 import model.Run;
 import com.kuba.runmanager.Main;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -59,10 +58,8 @@ public class EventsController implements Initializable{
     private Scene scene;
     private Stage stage;
     private final EventsService eventsService;
-    private boolean myRunsTurn;
     private final List<Counter> counters = new ArrayList<>();
-
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private APIRunEvent apiRunEvent;
     private MyRunEvent myRunEvent;
     private EventListener eventListener;
@@ -75,7 +72,7 @@ public class EventsController implements Initializable{
         userNameLabel.setText("User: " + eventsService.getUser().getName());
     }
 
-    public void userAccount(ActionEvent event) throws IOException {
+    public void userAccount() throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("User.fxml"));
         root = loader.load();
 
@@ -87,7 +84,7 @@ public class EventsController implements Initializable{
         stage.setScene(scene);
         stage.show();
     }
-    public void userLogout(ActionEvent event) throws IOException {
+    public void userLogout() throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Logout");
         alert.setHeaderText("You're about to logout");
@@ -103,7 +100,7 @@ public class EventsController implements Initializable{
         }
     }
 
-    public void runSearch(ActionEvent event){
+    public void runSearch(){
         for(Counter counter : counters){
             counter.interrupt();
         }
@@ -127,23 +124,28 @@ public class EventsController implements Initializable{
             if(layoutX + height >= runList.getHeight()){
                 break;
             }
-            if(run.getDate().isAfter(LocalDate.now())){
+            if(eventListener.isMyRunTurns()){
                 BorderPane borderPane =  putRun(run, space, height, width);
                 runList.getChildren().add(borderPane);
-                if(!eventListener.isMyRunTurns()){
-                    borderPane.setOnMouseClicked(e -> addRun(borderPane.getId()));
-                }else{
-                    borderPane.setOnMouseClicked(e -> {
-                        try {
-                            runInfo(borderPane.getId());
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-                }
+                borderPane.setOnMouseClicked(e -> {
+                    try {
+                        runInfo(borderPane.getId());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
                 AnchorPane.setTopAnchor(borderPane,layoutX);
                 AnchorPane.setLeftAnchor(borderPane,layoutY);
                 layoutX += height + space;
+            }else{
+                if(run.getDate().isAfter(LocalDate.now())){
+                    BorderPane borderPane =  putRun(run, space, height, width);
+                    runList.getChildren().add(borderPane);
+                    borderPane.setOnMouseClicked(e -> addRun(borderPane.getId()));
+                    AnchorPane.setTopAnchor(borderPane, layoutX);
+                    AnchorPane.setLeftAnchor(borderPane, layoutY);
+                    layoutX += height + space;
+                }
             }
         }
     }
@@ -169,7 +171,6 @@ public class EventsController implements Initializable{
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("Initialized !");
-        myRunsTurn = false;
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000);
         searchDistance.setValueFactory(valueFactory);
 
@@ -203,7 +204,7 @@ public class EventsController implements Initializable{
         distance.setText(run.getDistance()+" km");
         date.setText(run.getDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")));
         location.setText(run.getLocation());
-        timer.setText("timer");
+        timer.setText("Event already took place");
 
         date.setPrefWidth(5*space);
         date.setAlignment(Pos.CENTER_RIGHT);
@@ -221,8 +222,10 @@ public class EventsController implements Initializable{
         BorderPane.setAlignment(date, Pos.CENTER_RIGHT);
         BorderPane.setAlignment(location, Pos.TOP_CENTER);
         BorderPane.setAlignment(timer, Pos.CENTER);
-        counters.add(new Counter(eventsService, borderPane, timer, searchButton, run));
-        counters.get(counters.size() - 1).start();
+        if(run.getDate().isAfter(LocalDate.now())){
+            counters.add(new Counter(eventsService, timer, searchButton, run));
+            counters.get(counters.size() - 1).start();
+        }
         return borderPane;
     }
 

@@ -7,7 +7,7 @@ public class RunService {
 
     private Run run;
     private final Statement statement;
-    private String runTable = "myrun";
+    private final String runTable = "myrun";
     private int userId;
     public RunService() {
         try {

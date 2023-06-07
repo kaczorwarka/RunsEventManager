@@ -9,7 +9,7 @@ public class UserService {
 
     private final Statement statement;
     private User user;
-    private String userTable = "user";
+    private final String userTable = "user";
 
     public UserService() {
         try {

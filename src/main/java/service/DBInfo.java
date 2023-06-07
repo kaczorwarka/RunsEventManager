@@ -1,7 +1,4 @@
 package service;
-
-import com.kuba.runmanager.Main;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;

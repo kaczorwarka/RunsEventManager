@@ -7,12 +7,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import service.DBInfo;
 
+import java.util.Objects;
+
 
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent root = FXMLLoader.load(Main.class.getResource("Login.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(Main.class.getResource("Login.fxml")));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

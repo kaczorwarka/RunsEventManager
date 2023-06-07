@@ -41,10 +41,11 @@ public class RunController {
         runDistance.setText(runService.getRun().getDistance() + " km");
         runDate.setText(runService.getRun().getDate().toString());
         runLocation.setText(runService.getRun().getLocation());
+        runWeb.setText(runService.getRun().getWebsite());
         runName.setAlignment(Pos.CENTER);
     }
 
-    public void goBack(ActionEvent event) throws IOException {
+    public void goBack() throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("Events.fxml"));
         root = loader.load();
 
@@ -57,7 +58,7 @@ public class RunController {
         stage.show();
     }
 
-    public void delete(ActionEvent event) throws IOException {
+    public void delete() throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete");
         alert.setHeaderText("You're about to delete your run from data base !");

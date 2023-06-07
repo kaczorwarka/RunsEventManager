@@ -5,26 +5,21 @@ import model.Run;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class ApiConnection {
-
-    private String  link = "https://6464e6e6228bd07b353c5f76.mockapi.io/RunsEvents";
     private HttpURLConnection urlConnection;
-
 
     public List<Run> getApiRunEvents(){
         //connecting to DB
@@ -43,6 +38,16 @@ public class ApiConnection {
     }
 
     private List<JsonObject> getConnection(){
+
+        Properties properties = new Properties();
+
+        try (InputStream inputStream = DBInfo.class.getResourceAsStream("/config.properties")) {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String link = properties.getProperty("API.LINK");
         List<JsonObject> jsonList = null;
         BufferedReader reader;
         String line;
